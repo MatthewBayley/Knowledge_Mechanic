@@ -1,4 +1,4 @@
-import { App, Editor, MarkdownView, Modal, Notice, Plugin, PluginSettingTab, Setting } from 'obsidian';
+import { App, Editor, MarkdownView, Menu, Modal, Notice, Plugin, PluginSettingTab, Setting } from 'obsidian';
 
 // Remember to rename these classes and interfaces!
 
@@ -17,9 +17,21 @@ export default class MyPlugin extends Plugin {
 		await this.loadSettings();
 
 		// This creates an icon in the left ribbon.
-		const ribbonIconEl = this.addRibbonIcon('dice', 'Sample Plugin', (evt: MouseEvent) => {
+		const ribbonIconEl = this.addRibbonIcon('dice', 'Open menu', (event) => {
 			// Called when the user clicks the icon.
-			new Notice('This is a notice!');
+			const menu = new Menu();
+
+			menu.addItem((item) =>
+				item
+          			.setTitle('Copy')
+          			.setIcon('documents')
+          			.onClick(() => {
+            		new Notice('Copied');
+          			})
+			);
+
+			menu.showAtMouseEvent(event);
+
 		});
 		// Perform additional things with the ribbon
 		ribbonIconEl.addClass('my-plugin-ribbon-class');
@@ -36,6 +48,25 @@ export default class MyPlugin extends Plugin {
 				new SampleModal(this.app).open();
 			}
 		});
+
+		// this command adds a code block
+		this.registerMarkdownCodeBlockProcessor('bolt', (source, el, ctx) => {
+			const lines = source.split('\n').filter((line)=> line.length > 0)
+			const p = el.createEl('p');
+			p.textContent = ("hello world:" + source);
+			//p.style.color = "red"; 
+		})
+
+		// this command adds text to editor
+		this.addCommand({
+			id: 'insert bolt template',
+			name: 'Insert bolt template',
+			editorCallback: (editor: Editor) =>{
+				editor.replaceRange("```bolt\n```", editor.getCursor())
+				editor.getCursor()
+			}
+		})
+ 
 		// This adds an editor command that can perform some operation on the current editor instance
 		this.addCommand({
 			id: 'sample-editor-command',
