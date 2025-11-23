@@ -1,4 +1,4 @@
-import { App, Editor, MarkdownView, Menu, Modal, Notice, Plugin, PluginSettingTab, Setting } from 'obsidian';
+import { App, Editor, MarkdownView, Menu, Modal, Notice, Plugin, PluginSettingTab, Setting} from 'obsidian';
 
 // Remember to rename these classes and interfaces!
 
@@ -17,24 +17,34 @@ export default class MyPlugin extends Plugin {
 		await this.loadSettings();
 
 		// This creates an icon in the left ribbon.
-		const ribbonIconEl = this.addRibbonIcon('dice', 'Open menu', (event) => {
+		const ribbonIconEl = this.addRibbonIcon('plug-2', 'Test Plugin', (event) => {
 			// Called when the user clicks the icon.
 			const menu = new Menu();
-
 			menu.addItem((item) =>
 				item
-          			.setTitle('Copy')
+          			.setTitle('Option1')
           			.setIcon('documents')
           			.onClick(() => {
             		new Notice('Copied');
           			})
-			);
-
+			)
+			menu.addItem((paste) =>
+				paste
+          			.setTitle('Option2')
+          			.setIcon('clipboard-paste')
+          			.onClick(() => {
+            		new Notice('Paste');
+          			})
+			)
+			;
 			menu.showAtMouseEvent(event);
 
 		});
 		// Perform additional things with the ribbon
-		ribbonIconEl.addClass('my-plugin-ribbon-class');
+		if(ribbonIconEl) {
+			ribbonIconEl.classList.add("testPlugin");
+		}
+
 
 		// This adds a status bar item to the bottom of the app. Does not work on mobile apps.
 		const statusBarItemEl = this.addStatusBarItem();
@@ -54,6 +64,11 @@ export default class MyPlugin extends Plugin {
 			const lines = source.split('\n').filter((line)=> line.length > 0)
 			const p = el.createEl('p');
 			p.textContent = ("hello world:" + source);
+			var b = p.createEl("button");
+			b.innerHTML = "Rebuild";
+			b.addEventListener("click", () => {
+				
+			})
 			//p.style.color = "red"; 
 		})
 
@@ -76,6 +91,7 @@ export default class MyPlugin extends Plugin {
 				editor.replaceSelection('Sample Editor Command');
 			}
 		});
+
 		// This adds a complex command that can check whether the current state of the app allows execution of the command
 		this.addCommand({
 			id: 'open-sample-modal-complex',
